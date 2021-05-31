@@ -139,12 +139,12 @@ add_executable(teleop_gear_shifter_device
 target_link_libraries(teleop_gear_shifter_device
    ${catkin_LIBRARIES})
 
-#add_executable(teleop_control
-#    src/teleop_control.cpp
-#    src/teleop_control_main.cpp)
+add_executable(teleop_control
+    src/teleop_control.cpp
+    src/teleop_control_main.cpp)
 
-#target_link_libraries(teleop_control
-#    ${catkin_LIBRARIES})
+target_link_libraries(teleop_control
+    ${catkin_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}

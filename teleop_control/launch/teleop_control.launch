@@ -1,0 +1,22 @@
+<launch>
+
+   <!-- Launch Arguments -->
+   <arg name="use_deadman" default="true" />
+   <arg name="use_turbo" default="true" />
+   <!--   <arg name="with_telemetry_gui" default="true" />-->
+
+   <!-- Teleop Control Node -->
+   <node pkg="teleop_control"
+         type="teleop_control"
+         name="teleop_control">
+
+      <param name="scale_linear" value="1" type="double"/>
+      <param name="scale_angular" value="0.75" type="double"/>
+      <param name="scale_turbo" value="1.5" type="double"/>
+
+      <param name="deadman_required" type="bool" value="$(arg use_deadman)" />
+      <param name="turbo_allowed" type="bool" value="$(arg use_turbo)" />
+
+   </node>
+
+</launch>
