@@ -3,7 +3,6 @@
    <!-- Launch Arguments -->
    <arg name="use_deadman" default="true" />
    <arg name="use_turbo" default="true" />
-   <!--   <arg name="with_telemetry_gui" default="true" />-->
 
    <!-- Teleop Control Node -->
    <node pkg="teleop_control"

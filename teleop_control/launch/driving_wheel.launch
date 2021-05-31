@@ -1,10 +1,6 @@
 <launch>
 
    <!-- Launch Arguments -->
-<!--   <arg name="driving_station_dev_id" default="/dev/input/js1" />-->
-   <arg name="use_deadman" default="true" />
-   <arg name="use_turbo" default="true" />
-<!--   <arg name="with_telemetry_gui" default="true" />-->
 
    <!-- Driving Wheel Node -->
    <node pkg="teleop_control"
@@ -14,16 +10,7 @@
       <param name="axis_steering" value="0" type="int"/>
       <param name="axis_brake_pedal" value="3" type="int"/>
       <param name="axis_throttle" value="2" type="int"/>
-
-      <param name="scale_linear" value="1" type="double"/>
-      <param name="scale_angular" value="0.75" type="double"/>
-      <param name="scale_turbo" value="1.5" type="double"/>
-
       <param name="axis_deadman" value="1" type="int"/>
-      <param name="deadman_required" type="bool" value="$(arg use_deadman)" />
-
-      <param name="turbo_button_index" value="1" type="int"/>
-      <param name="turbo_allowed" type="bool" value="$(arg use_turbo)" />
 
    </node>
 
