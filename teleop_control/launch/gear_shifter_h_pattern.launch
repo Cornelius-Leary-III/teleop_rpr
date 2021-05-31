@@ -1,0 +1,15 @@
+<launch>
+
+   <!-- Gear Shifter Node -->
+   <node pkg="teleop_control"
+         type="teleop_gear_shifter_device"
+         name="teleop_gear_shifter_device">
+
+      <param name="gear_reverse" value="15" type="int"/>
+      <param name="gear_reverse_turbo" value="17" type="int"/>
+      <param name="gear_forward" value="14" type="int"/>
+      <param name="gear_forward_turbo" value="16" type="int"/>
+
+   </node>
+
+</launch>

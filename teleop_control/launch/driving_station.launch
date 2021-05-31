@@ -1,0 +1,25 @@
+<launch>
+
+   <!-- Launch Arguments -->
+   <arg name="driving_station_dev_id" default="/dev/input/js1" />
+   <arg name="use_deadman" default="true" />
+   <arg name="use_turbo" default="true" />
+<!--   <arg name="with_telemetry_gui" default="true" />-->
+
+   <!-- joy Node -->
+   <node respawn="true" pkg="joy" type="joy_node" name="driving_station_joy_node">
+      <param name="dev" type="string" value="$(arg driving_station_dev_id)"/>
+      <param name="deadzone" value="0.0"/>
+      <param name="autorepeat_rate" value="5.0"/>
+
+<!--      <remap from="joy" to="driving_station_joy"/>-->
+
+   </node>
+
+   <!-- Driving Wheel Launch File -->
+   <include file="$(find teleop_control)/launch/driving_wheel.launch"/>
+
+   <!-- Gear Shifter Launch File -->
+   <include file="$(find teleop_control)/launch/gear_shifter_h_pattern.launch"/>
+
+</launch>

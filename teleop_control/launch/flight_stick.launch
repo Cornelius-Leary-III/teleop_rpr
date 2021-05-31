@@ -1,0 +1,40 @@
+<launch>
+
+   <!-- Launch Arguments -->
+   <arg name="joy_dev_input" default="/dev/input/js1" />
+   <!--   <arg name="use_deadman" default="true" />-->
+   <!--   <arg name="use_turbo" default="true" />-->
+   <!--   <arg name="with_telemetry_gui" default="true" />-->
+
+   <!-- joy Node -->
+   <node respawn="true" pkg="joy" type="joy_node" name="flight_stick">
+      <param name="dev" type="string" value="$(arg joy_dev_input)"/>
+      <param name="deadzone" value="0.0"/>
+      <param name="autorepeat_rate" value="5.0"/>
+
+      <remap from="flight_stick" to="joy_device"/>
+
+   </node>
+
+   <!-- Flight Joystick Node -->
+   <node pkg="teleop_control"
+         type="teleop_flight_stick_device"
+         name="teleop_flight_stick_device">
+
+      <param name="axis_steering" value="0" type="int"/>
+      <param name="axis_brake_pedal" value="3" type="int"/>
+      <param name="axis_throttle" value="2" type="int"/>
+
+      <param name="scale_linear" value="1" type="double"/>
+      <param name="scale_angular" value="0.75" type="double"/>
+      <param name="scale_turbo" value="1.5" type="double"/>
+
+      <param name="axis_deadman" value="1" type="int"/>
+      <param name="deadman_required" type="bool" value="$(arg use_deadman)" />
+
+      <param name="turbo_button_index" value="1" type="int"/>
+      <param name="turbo_allowed" type="bool" value="$(arg use_turbo)" />
+
+   </node>
+
+</launch>
