@@ -76,6 +76,14 @@ void ControlNode::teleopDeviceMsgCallback(
       return;
    }
 
+   if (mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_NEUTRAL
+       || mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_UNKNOWN)
+   {
+      mCurrentTwistMsg.linear.x  = 0.0;
+      mCurrentTwistMsg.angular.z = 0.0;
+      return;
+   }
+
    if (mCurrentTeleopDeviceMsg.throttle <= gThrottleActiveThreshold)
    {
       mCurrentTwistMsg.linear.x  = 0.0;

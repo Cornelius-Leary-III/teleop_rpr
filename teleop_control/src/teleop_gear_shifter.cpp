@@ -104,9 +104,6 @@ void GearShifter::joyMsgCallback(const sensor_msgs::Joy::ConstPtr& joy_msg)
       gear_msg.gear = teleop_control_msgs::Gear::GEAR_NEUTRAL;
    }
 
-   ROS_DEBUG_STREAM("joy msg gear: %d" << gear_msg.gear);
-   ROS_DEBUG_STREAM("current gear: %d" << mCurrentGearMsg.gear);
-
    if (mCurrentGearMsg.gear != gear_msg.gear)
    {
       mCurrentGearMsg.gear         = gear_msg.gear;
