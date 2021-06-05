@@ -19,7 +19,6 @@ GearShifter::GearShifter(ros::NodeHandle* node_handle, const std::string& node_n
      mForwardGearIndex(gForwardGearIndexDefault),
      mForwardTurboGearIndex(gForwardTurboGearIndexDefault)
 {
-   //   std::string node_namespace = mNodeHandle.getNamespace();
    std::string node_namespace(node_name + "/");
 
    mNodeHandle.param(node_namespace + "gear_reverse", mReverseGearIndex, mReverseGearIndex);
@@ -37,33 +36,19 @@ GearShifter::GearShifter(ros::NodeHandle* node_handle, const std::string& node_n
    mJoySubscriber = mNodeHandle.subscribe("joy", 10, &GearShifter::joyMsgCallback, this);
 
    mCurrentGearMsg.header.frame_id = "";
-   mCurrentGearMsg.header.stamp    = ros::Time::now();
-
-   mCurrentGearMsg.gear = teleop_control_msgs::Gear::GEAR_UNKNOWN;
-
-   mTeleopGearPublisher.publish(mCurrentGearMsg);
+   setUnknownGear();
 }
 
 GearShifter::~GearShifter()
 {
-   mCurrentGearMsg.header.stamp = ros::Time::now();
-   mCurrentGearMsg.gear         = teleop_control_msgs::Gear::GEAR_UNKNOWN;
-
-   mTeleopGearPublisher.publish(mCurrentGearMsg);
+   setUnknownGear();
 }
 
 void GearShifter::processMsgs()
 {
    ros::Rate sleep_timer(gTeleopDeviceMsgPublishRate);
 
-   while (ros::ok())
-   {
-      ros::spinOnce();
-
-      //      mTeleopGearPublisher.publish(mCurrentGearMsg);
-
-      sleep_timer.sleep();
-   }
+   ros::spin();
 }
 
 void GearShifter::joyMsgCallback(const sensor_msgs::Joy::ConstPtr& joy_msg)
@@ -133,5 +118,13 @@ bool GearShifter::isAxisIndexValid(int index)
 bool GearShifter::isButtonIndexValid(int index)
 {
    return static_cast<size_t>(index) < mCurrentJoyMsg.buttons.size();
+}
+
+void GearShifter::setUnknownGear()
+{
+   mCurrentGearMsg.header.stamp = ros::Time::now();
+   mCurrentGearMsg.gear         = teleop_control_msgs::Gear::GEAR_UNKNOWN;
+
+   mTeleopGearPublisher.publish(mCurrentGearMsg);
 }
 } // namespace Teleop

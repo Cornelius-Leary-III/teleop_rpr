@@ -19,7 +19,6 @@ DrivingWheel::DrivingWheel(ros::NodeHandle* node_handle, const std::string& node
      mSteeringAxisIndex(gSteeringAxisIndexDefault),
      mDeadmanPedalAxisIndex(gDeadmanPedalAxisIndexDefault)
 {
-   //   std::string node_namespace = mNodeHandle.getNamespace();
    std::string node_namespace(node_name + "/");
 
    mNodeHandle.param(node_namespace + "axis_throttle", mThrottleAxisIndex, mThrottleAxisIndex);
@@ -36,26 +35,12 @@ DrivingWheel::DrivingWheel(ros::NodeHandle* node_handle, const std::string& node
    mJoySubscriber = mNodeHandle.subscribe("joy", 10, &DrivingWheel::joyMsgCallback, this);
 
    mCurrentTeleopDeviceMsg.header.frame_id = "";
-   mCurrentTeleopDeviceMsg.header.stamp    = ros::Time::now();
-
-   mCurrentTeleopDeviceMsg.brake          = 100.0;
-   mCurrentTeleopDeviceMsg.throttle       = 0.0;
-   mCurrentTeleopDeviceMsg.steering_angle = 0.0;
-   mCurrentTeleopDeviceMsg.deadman        = 0.0;
-
-   mTeleopDevicePublisher.publish(mCurrentTeleopDeviceMsg);
+   brake();
 }
 
 DrivingWheel::~DrivingWheel()
 {
-   mCurrentTeleopDeviceMsg.header.stamp = ros::Time::now();
-
-   mCurrentTeleopDeviceMsg.brake          = 100.0;
-   mCurrentTeleopDeviceMsg.throttle       = 0.0;
-   mCurrentTeleopDeviceMsg.steering_angle = 0.0;
-   mCurrentTeleopDeviceMsg.deadman        = 0.0;
-
-   mTeleopDevicePublisher.publish(mCurrentTeleopDeviceMsg);
+   brake();
 }
 
 void DrivingWheel::joyMsgCallback(const sensor_msgs::Joy::ConstPtr& joy_msg)
@@ -83,14 +68,7 @@ void DrivingWheel::processMsgs()
 {
    ros::Rate sleep_timer(gTeleopDeviceMsgPublishRate);
 
-   while (ros::ok())
-   {
-      ros::spinOnce();
-
-      //      mTeleopDevicePublisher.publish(mCurrentTeleopDeviceMsg);
-
-      sleep_timer.sleep();
-   }
+   ros::spin();
 }
 
 double DrivingWheel::readThrottle()
@@ -139,5 +117,17 @@ bool DrivingWheel::isAxisIndexValid(int index)
 bool DrivingWheel::isButtonIndexValid(int index)
 {
    return static_cast<size_t>(index) < mCurrentJoyMsg.buttons.size();
+}
+
+void DrivingWheel::brake()
+{
+   mCurrentTeleopDeviceMsg.header.stamp = ros::Time::now();
+
+   mCurrentTeleopDeviceMsg.brake          = 100.0;
+   mCurrentTeleopDeviceMsg.throttle       = 0.0;
+   mCurrentTeleopDeviceMsg.steering_angle = 0.0;
+   mCurrentTeleopDeviceMsg.deadman        = 0.0;
+
+   mTeleopDevicePublisher.publish(mCurrentTeleopDeviceMsg);
 }
 } // namespace Teleop

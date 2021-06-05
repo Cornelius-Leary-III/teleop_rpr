@@ -27,6 +27,8 @@ private:
    bool isAxisIndexValid(int index);
    bool isButtonIndexValid(int index);
 
+   void brake();
+
    ros::NodeHandle mNodeHandle;
 
    ros::Subscriber  mJoySubscriber;

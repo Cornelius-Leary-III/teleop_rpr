@@ -29,6 +29,9 @@ private:
 
    void processGearButtonStates();
 
+   void stopVehicle();
+   void zeroMotion();
+
    ros::NodeHandle mNodeHandle;
 
    ros::Publisher       mTwistPublisher;
@@ -43,7 +46,7 @@ private:
    double mScaleLinear;
    double mScaleSteering;
    double mScaleTurbo;
-   int    mGearScalingFactor;
+   double mGearScalingFactor;
 
    bool mIsDeadmanRequired;
 

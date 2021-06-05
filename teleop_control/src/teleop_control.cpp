@@ -42,16 +42,12 @@ ControlNode::ControlNode(ros::NodeHandle* node_handle, const std::string& node_n
 
    mGearSubscriber = mNodeHandle.subscribe("gear", 10, &ControlNode::gearMsgCallback, this);
 
-   mCurrentTwistMsg.linear.x  = 0.0;
-   mCurrentTwistMsg.angular.z = 0.0;
-   mTwistPublisher.publish(mCurrentTwistMsg);
+   stopVehicle();
 }
 
 ControlNode::~ControlNode()
 {
-   mCurrentTwistMsg.linear.x  = 0.0;
-   mCurrentTwistMsg.angular.z = 0.0;
-   mTwistPublisher.publish(mCurrentTwistMsg);
+   stopVehicle();
 }
 
 void ControlNode::teleopDeviceMsgCallback(
@@ -61,8 +57,7 @@ void ControlNode::teleopDeviceMsgCallback(
 
    if (!isDeadmanPressed())
    {
-      mCurrentTwistMsg.linear.x  = 0.0;
-      mCurrentTwistMsg.angular.z = 0.0;
+      zeroMotion();
       return;
    }
 
@@ -79,15 +74,13 @@ void ControlNode::teleopDeviceMsgCallback(
    if (mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_NEUTRAL
        || mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_UNKNOWN)
    {
-      mCurrentTwistMsg.linear.x  = 0.0;
-      mCurrentTwistMsg.angular.z = 0.0;
+      zeroMotion();
       return;
    }
 
    if (mCurrentTeleopDeviceMsg.throttle <= gThrottleActiveThreshold)
    {
-      mCurrentTwistMsg.linear.x  = 0.0;
-      mCurrentTwistMsg.angular.z = 0.0;
+      zeroMotion();
       return;
    }
 
@@ -141,34 +134,49 @@ bool ControlNode::isTurboModeActive()
 
 void ControlNode::processGearButtonStates()
 {
+   double gear_factor = 0.0;
+
    switch (mCurrentGearMsg.gear)
    {
       case teleop_control_msgs::Gear::GEAR_FORWARD:
       {
-         mGearScalingFactor = 1.0 * gGearScalingFactorMagnitude;
+         gear_factor = 1.0 * gGearScalingFactorMagnitude;
          break;
       }
       case teleop_control_msgs::Gear::GEAR_FORWARD_TURBO:
       {
-         mGearScalingFactor = 1.0 * gGearScalingFactorMagnitude;
+         gear_factor = 1.0 * gGearScalingFactorMagnitude;
          break;
       }
       case teleop_control_msgs::Gear::GEAR_REVERSE:
       {
-         mGearScalingFactor = -1.0 * gGearScalingFactorMagnitude;
+         gear_factor = -1.0 * gGearScalingFactorMagnitude;
          break;
       }
       case teleop_control_msgs::Gear::GEAR_REVERSE_TURBO:
       {
-         mGearScalingFactor = -1.0 * gGearScalingFactorMagnitude;
+         gear_factor = -1.0 * gGearScalingFactorMagnitude;
          break;
       }
       case teleop_control_msgs::Gear::GEAR_NEUTRAL:
       case teleop_control_msgs::Gear::GEAR_UNKNOWN:
       {
-         mGearScalingFactor = 0.0;
          break;
       }
    }
+
+   mGearScalingFactor = gear_factor;
+}
+
+void ControlNode::stopVehicle()
+{
+   zeroMotion();
+   mTwistPublisher.publish(mCurrentTwistMsg);
+}
+
+void ControlNode::zeroMotion()
+{
+   mCurrentTwistMsg.linear.x  = 0.0;
+   mCurrentTwistMsg.angular.z = 0.0;
 }
 } // namespace Teleop
