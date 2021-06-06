@@ -139,6 +139,15 @@ add_executable(teleop_gear_shifter_device
 target_link_libraries(teleop_gear_shifter_device
    ${catkin_LIBRARIES})
 
+# Flight Stick Device Node
+add_executable(teleop_flight_stick_device
+   src/teleop_flight_stick.cpp
+   src/teleop_flight_stick_main.cpp)
+
+target_link_libraries(teleop_flight_stick_device
+   ${catkin_LIBRARIES})
+
+# Teleop Control Node
 add_executable(teleop_control
     src/teleop_control.cpp
     src/teleop_control_main.cpp)
