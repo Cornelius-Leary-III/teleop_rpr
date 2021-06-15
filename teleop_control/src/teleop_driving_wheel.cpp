@@ -2,6 +2,7 @@
 
 namespace Teleop
 {
+const double gBrakeMaxMagnitude            = 1.0;
 const double gHIDMaxMagnitude              = 1.0;
 const double gHIDValueRange                = 2.0 * gHIDMaxMagnitude;
 const double gTeleopDeviceMsgPublishRate   = 10.0;
@@ -123,7 +124,7 @@ void DrivingWheel::brake()
 {
    mCurrentTeleopDeviceMsg.header.stamp = ros::Time::now();
 
-   mCurrentTeleopDeviceMsg.brake          = 100.0;
+   mCurrentTeleopDeviceMsg.brake          = gBrakeMaxMagnitude;
    mCurrentTeleopDeviceMsg.throttle       = 0.0;
    mCurrentTeleopDeviceMsg.steering_angle = 0.0;
    mCurrentTeleopDeviceMsg.deadman        = 0.0;

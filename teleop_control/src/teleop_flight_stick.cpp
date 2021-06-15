@@ -2,8 +2,8 @@
 
 namespace Teleop
 {
-const double gHIDMaxMagnitude            = 1.0;
-const double gHIDValueRange              = 2.0 * gHIDMaxMagnitude;
+const double gBrakeMaxMagnitude          = 1.0;
+const double gDeadmanMaxMagnitude        = 1.0;
 const double gTeleopDeviceMsgPublishRate = 10.0;
 const int    gThrottleAxisIndexDefault   = 0;
 const int    gSteeringAxisIndexDefault   = 1;
@@ -143,7 +143,7 @@ double FlightStick::readDeadman()
 
    if (deadman)
    {
-      return 100.0;
+      return gDeadmanMaxMagnitude;
    }
 
    return 0.0;
@@ -183,7 +183,7 @@ void FlightStick::brake()
 {
    mCurrentTeleopDeviceMsg.header.stamp = ros::Time::now();
 
-   mCurrentTeleopDeviceMsg.brake          = 100.0;
+   mCurrentTeleopDeviceMsg.brake          = gBrakeMaxMagnitude;
    mCurrentTeleopDeviceMsg.throttle       = 0.0;
    mCurrentTeleopDeviceMsg.steering_angle = 0.0;
    mCurrentTeleopDeviceMsg.deadman        = 0.0;
