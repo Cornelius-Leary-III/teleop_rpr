@@ -143,7 +143,7 @@ double FlightStick::readDeadman()
 
    if (deadman)
    {
-      return 100.0;
+      return 1.0;
    }
 
    return 0.0;
@@ -183,7 +183,7 @@ void FlightStick::brake()
 {
    mCurrentTeleopDeviceMsg.header.stamp = ros::Time::now();
 
-   mCurrentTeleopDeviceMsg.brake          = 100.0;
+   mCurrentTeleopDeviceMsg.brake          = 1.0;
    mCurrentTeleopDeviceMsg.throttle       = 0.0;
    mCurrentTeleopDeviceMsg.steering_angle = 0.0;
    mCurrentTeleopDeviceMsg.deadman        = 0.0;
