@@ -14,17 +14,17 @@ const double gDeadmanActiveThreshold     = 0.0;
 const double gGearScalingFactorMagnitude = 1.0;
 
 ControlNode::ControlNode(ros::NodeHandle* node_handle, const std::string& node_name)
-   : mNodeHandle(*node_handle),
-     mCurrentTwistMsg(),
-     mCurrentTeleopDeviceMsg(),
-     mCurrentGearMsg(),
-     mScaleLinear(gScaleLinearDefault),
-     mScaleSteering(gScaleAngularDefault),
-     mScaleTurbo(gScaleTurboDefault),
-     mGearScalingFactor(gGearScalingFactorMagnitude),
-     mIsDeadmanRequired(false),
-     mIsInTurboMode(false),
-     mIsTurboAllowed(false)
+  : mNodeHandle(*node_handle),
+    mCurrentTwistMsg(),
+    mCurrentTeleopDeviceMsg(),
+    mCurrentGearMsg(),
+    mScaleLinear(gScaleLinearDefault),
+    mScaleSteering(gScaleAngularDefault),
+    mScaleTurbo(gScaleTurboDefault),
+    mGearScalingFactor(gGearScalingFactorMagnitude),
+    mIsDeadmanRequired(false),
+    mIsInTurboMode(false),
+    mIsTurboAllowed(false)
 {
    std::string node_namespace(node_name + "/");
 
@@ -38,7 +38,7 @@ ControlNode::ControlNode(ros::NodeHandle* node_handle, const std::string& node_n
    mTwistPublisher = mNodeHandle.advertise<geometry_msgs::Twist>("cmd_vel", 1);
 
    mTeleopDeviceSubscriber =
-      mNodeHandle.subscribe("teleop_device", 10, &ControlNode::teleopDeviceMsgCallback, this);
+         mNodeHandle.subscribe("teleop_device", 10, &ControlNode::teleopDeviceMsgCallback, this);
 
    mGearSubscriber = mNodeHandle.subscribe("gear", 10, &ControlNode::gearMsgCallback, this);
 
@@ -51,35 +51,43 @@ ControlNode::~ControlNode()
 }
 
 void ControlNode::teleopDeviceMsgCallback(
-   const teleop_control_msgs::TeleopDevice::ConstPtr& teleop_device_msg)
+      const teleop_control_msgs::TeleopDevice::ConstPtr& teleop_device_msg)
 {
    mCurrentTeleopDeviceMsg = *teleop_device_msg;
 
    if (!isDeadmanPressed())
    {
+      std::cout << __PRETTY_FUNCTION__ << "\tdeadman is not pressed!" << std::endl;
       zeroMotion();
       return;
    }
+
+   processGearButtonStates();
 
    if (mCurrentTeleopDeviceMsg.brake > gBrakeActiveThreshold)
    {
-      processGearButtonStates();
+
+      std::cout << __PRETTY_FUNCTION__ << "\tbrake is pressed!" << std::endl;
 
       // deceleration?
-      mCurrentTwistMsg.linear.x = std::abs(mCurrentTwistMsg.linear.x)
-                                  * (1.0 - mCurrentTeleopDeviceMsg.brake) * mGearScalingFactor;
+      mCurrentTwistMsg.linear.x = std::abs(mCurrentTwistMsg.linear.x) *
+                                  (1.0 - mCurrentTeleopDeviceMsg.brake) * mGearScalingFactor;
       return;
    }
 
-   if (mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_NEUTRAL
-       || mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_UNKNOWN)
+   if (mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_NEUTRAL ||
+       mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_UNKNOWN)
    {
+      std::cout << __PRETTY_FUNCTION__ << "\tin neutral or unknown gear!" << std::endl;
+
       zeroMotion();
       return;
    }
 
-   if (mCurrentTeleopDeviceMsg.throttle <= gThrottleActiveThreshold)
+   if (std::abs(mCurrentTeleopDeviceMsg.throttle) <= gThrottleActiveThreshold)
    {
+      std::cout << __PRETTY_FUNCTION__ << "\tthrottle is not pressed!" << std::endl;
+
       zeroMotion();
       return;
    }
@@ -92,7 +100,10 @@ void ControlNode::teleopDeviceMsgCallback(
    }
 
    mCurrentTwistMsg.angular.z =
-      mScaleSteering * mCurrentTeleopDeviceMsg.steering_angle /** mGearScalingFactor*/;
+         mScaleSteering * mCurrentTeleopDeviceMsg.steering_angle /** mGearScalingFactor*/;
+
+   std::cout << __PRETTY_FUNCTION__ << "\tthrottle is pressed: " << mCurrentTwistMsg.linear.x
+             << std::endl;
 }
 
 void ControlNode::gearMsgCallback(const teleop_control_msgs::Gear::ConstPtr& gear_msg)
@@ -126,8 +137,8 @@ bool ControlNode::isDeadmanPressed()
 
 bool ControlNode::isTurboModeActive()
 {
-   mIsInTurboMode = mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_FORWARD_TURBO
-                    || mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_REVERSE_TURBO;
+   mIsInTurboMode = mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_FORWARD_TURBO ||
+                    mCurrentGearMsg.gear == teleop_control_msgs::Gear::GEAR_REVERSE_TURBO;
 
    return mIsTurboAllowed && mIsInTurboMode;
 }

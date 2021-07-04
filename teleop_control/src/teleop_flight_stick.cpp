@@ -5,20 +5,20 @@ namespace Teleop
 const double gBrakeMaxMagnitude          = 1.0;
 const double gDeadmanMaxMagnitude        = 1.0;
 const double gTeleopDeviceMsgPublishRate = 10.0;
-const int    gThrottleAxisIndexDefault   = 0;
-const int    gSteeringAxisIndexDefault   = 1;
+const int    gThrottleAxisIndexDefault   = 1;
+const int    gSteeringAxisIndexDefault   = 2;
 const int    gDeadmanButtonIndexDefault  = 0;
 const int    gTurboButtonIndexDefault    = 1;
 
 FlightStick::FlightStick(ros::NodeHandle* node_handle, const std::string& node_name)
-   : mNodeHandle(*node_handle),
-     mCurrentJoyMsg(),
-     mCurrentTeleopDeviceMsg(),
-     mCurrentGearMsg(),
-     mThrottleAxisIndex(gThrottleAxisIndexDefault),
-     mSteeringAxisIndex(gSteeringAxisIndexDefault),
-     mDeadmanButtonIndex(gDeadmanButtonIndexDefault),
-     mTurboButtonIndex(gTurboButtonIndexDefault)
+  : mNodeHandle(*node_handle),
+    mCurrentJoyMsg(),
+    mCurrentTeleopDeviceMsg(),
+    mCurrentGearMsg(),
+    mThrottleAxisIndex(gThrottleAxisIndexDefault),
+    mSteeringAxisIndex(gSteeringAxisIndexDefault),
+    mDeadmanButtonIndex(gDeadmanButtonIndexDefault),
+    mTurboButtonIndex(gTurboButtonIndexDefault)
 {
    std::string node_namespace(node_name + "/");
 
@@ -29,7 +29,7 @@ FlightStick::FlightStick(ros::NodeHandle* node_handle, const std::string& node_n
    mNodeHandle.param(node_namespace + "button_turbo", mTurboButtonIndex, mTurboButtonIndex);
 
    mTeleopDevicePublisher =
-      mNodeHandle.advertise<teleop_control_msgs::TeleopDevice>("teleop_device", 1);
+         mNodeHandle.advertise<teleop_control_msgs::TeleopDevice>("teleop_device", 1);
 
    mTeleopGearPublisher = mNodeHandle.advertise<teleop_control_msgs::Gear>("gear", 1);
 
@@ -62,6 +62,8 @@ void FlightStick::joyMsgCallback(const sensor_msgs::Joy::ConstPtr& joy_msg)
 
    bool in_forward_gear = teleop_device_msg.throttle > 0.0;
    bool in_reverse_gear = teleop_device_msg.throttle < 0.0;
+
+   teleop_device_msg.throttle = std::abs(teleop_device_msg.throttle);
 
    bool use_turbo = mCurrentJoyMsg.buttons.at(mTurboButtonIndex);
 
