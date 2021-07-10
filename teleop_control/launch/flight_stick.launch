@@ -1,7 +1,7 @@
 <launch>
 
    <!-- Launch Arguments -->
-   <arg name="joy_dev_input" default="/dev/input/js2" />
+   <arg name="joy_dev_input" default="/dev/input/js1" />
 
    <!-- joy Node -->
    <node respawn="true" pkg="joy" type="joy_node" name="flight_stick">
